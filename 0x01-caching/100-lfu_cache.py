@@ -6,13 +6,15 @@ from base_caching import BaseCaching
 
 class LFUCache(BaseCaching):
     """
-    LFUCache inherits from BaseCaching and implements a LFU (Least Frequently Used)
+    LFUCache inherits from BaseCaching
+    and implements a LFU (Least Frequently Used)
     caching strategy.
     """
 
     def __init__(self):
         """
-        Initialize the cache with an empty dictionary, an empty frequency counter,
+        Initialize the cache with an empty dictionary,
+        an empty frequency counter,
         and an empty usage order list.
         """
         super().__init__()
@@ -21,7 +23,8 @@ class LFUCache(BaseCaching):
 
     def put(self, key, item):
         """
-        Add an item to the cache, following the LFU and LRU eviction strategies.
+        Add an item to the cache,
+        following the LFU and LRU eviction strategies.
         """
         if key is not None and item is not None:
             self.cache_data[key] = item
