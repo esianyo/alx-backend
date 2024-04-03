@@ -1,66 +1,81 @@
-#!/usr/bin/env python3
-""" LFUCache class for LFU caching """
+#!/usr/bin/python3
+""" 100-lfu_cache.py """
 
-from base_caching import BaseCaching
+
+BaseCaching = __import__('base_caching').BaseCaching
 
 
 class LFUCache(BaseCaching):
-    """
-    LFUCache inherits from BaseCaching
-    and implements a LFU (Least Frequently Used)
-    caching strategy.
-    """
+    """ LFU caching algorithm """
 
     def __init__(self):
-        """
-        Initialize the cache with an empty dictionary,
-        an empty frequency counter,
-        and an empty usage order list.
-        """
+        """ Initialize LFU caching """
         super().__init__()
-        self.frequency = {}  # Track frequency of access for each key
-        self.usage_order = []  # Track usage order for ties
+        self.freq = {}
 
     def put(self, key, item):
-        """
-        Add an item to the cache,
-        following the LFU and LRU eviction strategies.
-        """
-        if key is not None and item is not None:
-            self.cache_data[key] = item
-            self._update_frequency(key)  # Update frequency and usage order
+        """ Add an item to the cache """
+        if key is None or item is None:
+            return
 
-            # Enforce maximum items limit (LFU and LRU eviction)
-            if len(self.cache_data) > self.MAX_ITEMS:
-                discarded_key = self._evict_lfu_lru()
-                print("DISCARD: {}".format(discarded_key))
-                del self.cache_data[discarded_key]
+        if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+            min_freq = min(self.freq.values())
+            items = [k for k, v in self.freq.items() if v == min_freq]
+            if len(items) == 1:
+                del self.cache_data[items[0]]
+                del self.freq[items[0]]
+            else:
+                lru_key = min(self.cache_data, key=lambda
+                              k: self.cache_data[k])
+                del self.cache_data[lru_key]
+                del self.freq[lru_key]
+
+        self.cache_data[key] = item
+        self.freq[key] = 1
 
     def get(self, key):
-        """
-        Get an item from the cache, updating its frequency and usage order.
-        """
-        if key is not None and key in self.cache_data:
-            self._update_frequency(key)
-            return self.cache_data[key]
+        """ Retrieve an item from the cache """
+        if key is None or key not in self.cache_data:
+            return None
 
-        return None
+        self.freq[key] += 1
+        return self.cache_data[key]
 
-    def _update_frequency(self, key):
-        """
-        Update the frequency and usage order of a key after access.
-        """
-        self.frequency[key] = self.frequency.get(key, 0) + 1
-        self.usage_order.remove(key)  # Move to the back (LRU)
-        self.usage_order.append(key)
 
-    def _evict_lfu_lru(self):
-        """
-        Evict the least frequently used item, using LRU as a tiebreaker.
-        """
-        # Find items with the lowest frequency
-        min_freq = min(self.frequency.values())
-        candidates = [k for k, v in self.frequency.items() if v == min_freq]
-
-        # Break ties using LRU (least recently used)
-        return candidates[self.usage_order.index(candidates[0])]
+if __name__ == "__main__":
+    my_cache = LFUCache()
+    my_cache.put("A", "Hello")
+    my_cache.put("B", "World")
+    my_cache.put("C", "Holberton")
+    my_cache.put("D", "School")
+    my_cache.print_cache()
+    print(my_cache.get("B"))
+    my_cache.put("E", "Battery")
+    my_cache.print_cache()
+    my_cache.put("C", "Street")
+    my_cache.print_cache()
+    print(my_cache.get("A"))
+    print(my_cache.get("B"))
+    print(my_cache.get("C"))
+    my_cache.put("F", "Mission")
+    my_cache.print_cache()
+    my_cache.put("G", "San Francisco")
+    my_cache.print_cache()
+    my_cache.put("H", "H")
+    my_cache.print_cache()
+    my_cache.put("I", "I")
+    my_cache.print_cache()
+    print(my_cache.get("I"))
+    print(my_cache.get("H"))
+    print(my_cache.get("I"))
+    print(my_cache.get("H"))
+    print(my_cache.get("I"))
+    print(my_cache.get("H"))
+    my_cache.put("J", "J")
+    my_cache.print_cache()
+    my_cache.put("K", "K")
+    my_cache.print_cache()
+    my_cache.put("L", "L")
+    my_cache.print_cache()
+    my_cache.put("M", "M")
+    my_cache.print_cache()
