@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
-"""
-0. Basic Flask app
-"""
-from flask import Flask, render_template
+from flask import Flask
+
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    """
-    Renders index.html template
-    """
-    return render_template('0-index.html',
-                           title="Welcome to Holberton",
-                           header="Hello world"
-                           )
+    """Basic route returning a simple message."""
+    return "<h1>Hello world!</h1>"
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+    app.run(host='0.0.0.0', port=5000)
