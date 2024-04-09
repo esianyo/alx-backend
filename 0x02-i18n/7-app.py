@@ -48,13 +48,22 @@ def get_locale():
     Determines the best locale from URL parameter, user settings,
     request headers, and supported languages.
     """
-    # ... (same logic as in previous tasks)
+    user = g.user
+    if user and user.get('locale'):
+        return user['locale']
+    locale = request.args.get('locale')
+    if locale in app.config['LANGUAGES']:
+        return locale
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 @app.route('/')
 def index():
-    """Basic route displaying a localized message."""
-    # ... (same logic as in previous tasks)
+    """Basic route displaying a welcome message based on user login."""
+    user = g.user
+    if user:
+        return gettext('logged_in_as') % {'username': user['name']}
+    return gettext('not_logged_in')
 
 
 if __name__ == '__main__':
